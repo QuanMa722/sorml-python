@@ -1,50 +1,48 @@
+# -*- coding: utf-8 -*-
+
 import pulp
-import sys
-import re
+import os
 
 
 class Linear_program:
 
-    def __init__(self, austerity, equation):
-        self.austerity = austerity
+    def __init__(self, equation, austerity):
         self.equation = equation
+        self.austerity = austerity
 
     @staticmethod
-    def parameter_description():
-
-        print("""
-        If unconstrained, fill in "", if constrained, fill in the number.
-        
-        austerity = [
-            ['x1', 0, 3, 'Continuous'],
-            ['x2', 0, 2, 'Continuous'],
-        ]
-
-        equation = [
-            "max = 3 * x1 + 4 * x2",
-            "2 * x1 + x2 <= 40",
-            "x1 + 3 * x2 <= 30",
-        ]
-        
-        """)
+    def example():
+        print("-" * 60)
+        print(
+            """
+            equation = [
+                "max = 60 * x + 100 * y",
+                "0.18 * x + 0.09 * y <= 72",
+                "0.08 * x + 0.28 * y <= 56",
+            ]
+            
+            austerity = [
+                ['x', 0, "", 'Continuous'],
+                ['y', 0, "", 'Continuous'],
+            ]
+            """
+        )
+        print("-" * 60)
 
     def calculate(self):
 
         expression = self.equation[0]
-        pattern = re.compile(r'(\w+)\s*=\s*(.*)')
-        match = pattern.match(expression)
-        lhs = match.group(1)
-        rhs = match.group(2)
+        lhs, rhs = expression.split("=")
+        lhs = lhs.strip()
+        rhs = rhs.strip()
 
         if lhs == "max":
-            MyProbLP = pulp.LpProblem("LPProbDemo1", sense=pulp.LpMaximize)
+            MyProbLP = pulp.LpProblem("MyProbLP", sense=pulp.LpMaximize)
         else:
-            MyProbLP = pulp.LpProblem("LPProbDemo1", sense=pulp.LpMinimize)
+            MyProbLP = pulp.LpProblem("MyProbLP", sense=pulp.LpMinimize)
 
-        # 创建变量
         variables = {}
         for index in range(len(self.austerity)):
-            # 修正这里
             if self.austerity[index][1] == "":
                 if self.austerity[index][2] == "":
                     variables[self.austerity[index][0]] = pulp.LpVariable(self.austerity[index][0],
@@ -62,16 +60,17 @@ class Linear_program:
                                                                       upBound=None,
                                                                       cat=self.austerity[index][3])
             else:
-                variables[self.austerity[index][0]] = pulp.LpVariable(self.austerity[index][0],
-                                                                      lowBound=float(self.austerity[index][1]),
-                                                                      upBound=float(self.austerity[index][2]),
-                                                                      cat=self.austerity[index][3])
+                print("austerity error")
 
         objective = eval(rhs, variables)
         MyProbLP += objective
 
         for index in range(1, len(self.equation)):
             MyProbLP += eval(self.equation[index], variables)
+
+        original_stdout = os.dup(1)
+        temp_fd = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(temp_fd, 1)
 
         try:
             MyProbLP.solve()
@@ -81,12 +80,10 @@ class Linear_program:
                 f"This is an error {e}, but the most likely is an input error."
             )
 
-        if pulp.LpStatus[MyProbLP.status] == "Infeasible":
-            print("No solution!")
-            sys.exit()
+        os.dup2(original_stdout, 1)
+        os.close(original_stdout)
 
-        else:
-            for v in MyProbLP.variables():
-                print(v.name, "=", v.varValue)
-
-            print("max =", pulp.value(MyProbLP.objective))
+        print(pulp.LpStatus[MyProbLP.status])
+        for var in MyProbLP.variables():
+            print(f"{var.name}: {var.varValue}")
+        print(f"Objective: {pulp.value(MyProbLP.objective)}")

@@ -15,5 +15,4 @@ austerity = [
 ]
 
 linear_program = Linear_program(equation, austerity)
-linear_program.example()
 linear_program.calculate()

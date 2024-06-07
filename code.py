@@ -1,6 +1,5 @@
-
-
 from sorml import Linear_program
+from sorml import Chart
 
 
 equation = [
@@ -10,8 +9,8 @@ equation = [
 ]
 
 austerity = [
-    ['x', 0, '', 'Continuous'],
-    ['y', 0, '', 'Continuous'],
+    ['x', 0, "", 'Continuous'],
+    ['y', 0, "", 'Continuous'],
 ]
 
 linear_program = Linear_program(equation, austerity)

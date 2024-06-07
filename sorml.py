@@ -1,7 +1,16 @@
-# -*- coding: utf-8 -*-
-
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+import pandas as pd
 import pulp
 import os
+
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
+
+
+class Data_process:
+    ...
 
 
 class Linear_program:
@@ -9,25 +18,6 @@ class Linear_program:
     def __init__(self, equation, austerity):
         self.equation = equation
         self.austerity = austerity
-
-    @staticmethod
-    def example():
-        print("-" * 60)
-        print(
-            """
-            equation = [
-                "max = 60 * x + 100 * y",
-                "0.18 * x + 0.09 * y <= 72",
-                "0.08 * x + 0.28 * y <= 56",
-            ]
-            
-            austerity = [
-                ['x', 0, "", 'Continuous'],
-                ['y', 0, "", 'Continuous'],
-            ]
-            """
-        )
-        print("-" * 60)
 
     def calculate(self):
 
@@ -87,3 +77,56 @@ class Linear_program:
         for var in MyProbLP.variables():
             print(f"{var.name}: {var.varValue}")
         print(f"Objective: {pulp.value(MyProbLP.objective)}")
+
+
+class Chart:
+
+    def __init__(self, file):
+        self.file = file
+
+    def chart_scatter(self, item_list, dimension):
+        try:
+            try:
+                data = pd.read_csv(self.file, encoding="utf-8")
+            except UnicodeDecodeError:
+                data = pd.read_csv(self.file, encoding="gbk")
+            except FileNotFoundError:
+                print("File not found")
+                return
+
+            if dimension == 2:
+
+                if len(item_list) == 1:
+                    print("Input error!")
+                else:
+                    data_x = data[item_list[0]]
+                    data_y = data[item_list[1:]]
+
+                    for column in data_y.columns:
+                        plt.scatter(data_x, data_y[column], label=column)
+
+                    plt.title('Scatter Plot')
+                    plt.xlabel('X-axis label')
+                    plt.ylabel('Y-axis label')
+                    plt.legend()
+                    plt.grid()
+                    plt.show()
+
+            elif dimension == 3:
+                ...
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -81,7 +81,7 @@ class Chart:
     def __init__(self, file):
         self.file = file
 
-    def chart_scatter(self, item_list, dimension):
+    def scatter(self, item_list, dimension):
         try:
             try:
                 data = pd.read_csv(self.file, encoding="utf-8")
@@ -114,6 +114,8 @@ class Chart:
 
         except Exception as e:
             print(f"An error occurred: {e}")
+
+    # def plot(self):
 
 
 class Statistic:
@@ -182,6 +184,48 @@ class Statistic:
                 column_array = np.array(data[column])
                 max_value = np.max(column_array)
                 return max_value
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def min(self, column):
+        try:
+            if isinstance(column, list):
+                min_value = min(column)
+                return min_value
+            else:
+                try:
+                    data = pd.read_csv(self.file, encoding="utf-8")
+                except UnicodeDecodeError:
+                    data = pd.read_csv(self.file, encoding="gbk")
+                except FileNotFoundError:
+                    print("File not found")
+                    return
+
+                column_array = np.array(data[column])
+                min_value = np.min(column_array)
+                return min_value
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def median(self, column):
+        try:
+            if isinstance(column, list):
+                median_value = np.median(column)
+                return median_value
+            else:
+                try:
+                    data = pd.read_csv(self.file, encoding="utf-8")
+                except UnicodeDecodeError:
+                    data = pd.read_csv(self.file, encoding="gbk")
+                except FileNotFoundError:
+                    print("File not found")
+                    return
+
+                column_array = np.array(data[column])
+                median_value = np.median(column_array)
+                return median_value
 
         except Exception as e:
             print(f"An error occurred: {e}")

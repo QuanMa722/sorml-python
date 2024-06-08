@@ -1,12 +1,9 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 import pulp
 import os
-
-plt.rcParams['font.family'] = ['sans-serif']
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
 
 
 class Data_process:
@@ -119,14 +116,72 @@ class Chart:
             print(f"An error occurred: {e}")
 
 
+class Statistic:
 
+    def __init__(self, file):
+        self.file = file
 
+    def average(self, column):
+        try:
+            if isinstance(column, list):
+                column_array = np.array(column)
+                average_value = np.mean(column_array)
+                return average_value
+            else:
+                try:
+                    data = pd.read_csv(self.file, encoding="utf-8")
+                except UnicodeDecodeError:
+                    data = pd.read_csv(self.file, encoding="gbk")
+                except FileNotFoundError:
+                    print("File not found")
+                    return
 
+                column_array = np.array(data[column])
+                average_value = np.mean(column_array)
+                return average_value
 
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
+    def variance(self, column):
+        try:
+            if isinstance(column, list):
+                column_array = np.array(column)
+                variance_value = np.var(column_array)
+                return variance_value
+            else:
+                try:
+                    data = pd.read_csv(self.file, encoding="utf-8")
+                except UnicodeDecodeError:
+                    data = pd.read_csv(self.file, encoding="gbk")
+                except FileNotFoundError:
+                    print("File not found")
+                    return
 
+                column_array = np.array(data[column])
+                variance_value = np.var(column_array)
+                return variance_value
 
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
+    def max(self, column):
+        try:
+            if isinstance(column, list):
+                max_value = max(column)
+                return max_value
+            else:
+                try:
+                    data = pd.read_csv(self.file, encoding="utf-8")
+                except UnicodeDecodeError:
+                    data = pd.read_csv(self.file, encoding="gbk")
+                except FileNotFoundError:
+                    print("File not found")
+                    return
 
+                column_array = np.array(data[column])
+                max_value = np.max(column_array)
+                return max_value
 
-
+        except Exception as e:
+            print(f"An error occurred: {e}")

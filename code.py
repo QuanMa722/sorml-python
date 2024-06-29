@@ -1,6 +1,4 @@
 from sorml import Linear_program
-from sorml import Chart
-
 
 equation = [
     "max = 60 * x + 100 * y",
